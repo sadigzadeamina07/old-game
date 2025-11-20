@@ -54,38 +54,34 @@
             }
      collision(obj1) {
             return this.y > obj1.y - this.h &&
-                this.y > obj1.y - obj1.h &&
+                this.y < obj1.y + obj1.h &&
                 this.x > obj1.x - this.w / 2 &&
                 this.x < obj1.x + obj1.w - this.w / 2
         }
         }
-        class Bricks {
-            constructor(row, col, gap, color) {
-                this.arr = []
-                this.row = row
-                this.col = col
-                this.color = color
-            }
 
+        class Bricks {
+                  arr = []
             create(row, col, gap, color) {
                 for (let i = 0; i < row; i++) {
                     for (let j = 0; j < col; j++) {
-                        this.id = 'b' + i + j
-                        let w = game.w - ((col + 1) * gap) / col
+                        let id =  `b` + i + j
+                        let w = (game.w - (col + 1) * gap) / col
                         let h = w / 5
                         let x = (j + 1) * gap + j * w
                         let y = (i + 1) * gap + i * h
-                        let k = new HTMLElm(id, w, h, 0, color, x, y)
-                        this.arr.push(k)
-                        k.create(game.elem)
+                        let brick = new HTMLElm(id, w, h, 0, color, x, y)
+                        this.arr.push(brick)
+                        brick.create(game.elem)
 
                     }
                 }
             }
+            //collision toqqusmadi
             collision() {
                 for (let i = 0; i < this.arr.length; i++) {
                     let brick = this.arr[i]
-                    if (collision(bricks)) {
+                    if (ball.collision(brick)) {
                         this.arr.splice(i, 1)
                         document.getElementById(brick.id).remove()
                         ball.dy *= -1//1 1 sokur silsen deydiyi her hansi kerpici soker
@@ -103,14 +99,15 @@
         game.create(document.body)
         ball.create(game.elem)
         bar.create(game.elem)
-        bricks.create(3, 6,10, 'orange')
+        bricks.create(3, 6 , 10, 'orange')
         ball.move = function () {
             if (this.x < 0 || this.x > game.w - this.w) this.dx *= -1
-            if (this.y < 0 || colision(bar, ball)) this.dy *= -1
+            if (this.y < 0 || this.collision(bar)) this.dy *= -1
             else if (this.y > game.h - this.h) game.over()
             this.x += this.dx
             this.y += this.dy
             this.show()
+            bricks.collision()
         }
         bar.move = function (e) {
             if (e.keyCode == 37 && this.x > 0) this.x -= this.dx
